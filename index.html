@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shree Ashapura Canteen - Order Online</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #fef7ed;
+            color: #2d2d2d;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+            color: white;
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(251, 146, 60, 0.3);
+        }
+
+        .header-main {
+            display: flex;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            gap: 32px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            flex-shrink: 0;
+            letter-spacing: -0.5px;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: translateY(-1px);
+            text-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .tagline {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-left: 12px;
+            font-weight: 300;
+        }
+
+        .search-container {
+            flex: 1;
+            display: flex;
+            max-width: 500px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            background: white;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            font-size: 16px;
+            outline: none;
+            font-weight: 300;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            color: white;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 24px;
+            font-size: 14px;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+            font-weight: 400;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            border-radius: 12px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .category-nav {
+            background: white;
+            padding: 16px 0;
+            border-bottom: 1px solid #fed7aa;
+        }
+
+        .category-nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+        }
+
+        .category-nav a {
+            color: #fb923c;
+            text-decoration: none;
+            font-size: 15px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .category-nav a:hover,
+        .category-nav a.active {
+            background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+            color: white;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+            color: white;
+            padding: 60px 48px;
+            margin-bottom: 48px;
+            border-radius: 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner h1 {
+            font-size: 48px;
+            margin-bottom: 24px;
+            font-weight: 600;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-banner p {
+            font-size: 20px;
+            opacity: 0.9;
+            max-width: 500px;
+            margin: 0 auto 40px;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-size: 28px;
+            margin: 48px 0 32px;
+            color: #fb923c;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(251, 146, 60, 0.1);
+            border: 2px solid #fed7aa;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(251, 146, 60, 0.2);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 24px;
+        }
+
+        .product-title {
+            font-size: 20px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #fb923c;
+        }
+
+        .product-subtitle {
+            font-size: 14px;
+            color: #8b8ba7;
+            margin-bottom: 16px;
+        }
+
+        .product-price {
+            font-size: 24px;
+            color: #dc2626;
+            font-weight: 700;
+            margin: 16px 0;
+        }
+
+        .size-options {
+            margin: 16px 0;
+        }
+
+        .size-option {
+            display: inline-block;
+            margin: 4px 8px 4px 0;
+            padding: 6px 12px;
+            background: #fef3c7;
+            border: 2px solid #fed7aa;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #fb923c;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .size-option:hover,
+        .size-option.active {
+            background: #fb923c;
+            color: white;
+            border-color: #fb923c;
+        }
+
+        .add-to-cart {
+            background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin: 12px 0;
+            transition: all 0.2s ease;
+        }
+
+        .add-to-cart:hover {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+
+        .close:hover {
+            color: #fb923c;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            color: #fb923c;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-price {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            background: #fb923c;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .quantity {
+            min-width: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .remove-item {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .checkout-btn, .pay-btn {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .checkout-btn:hover, .pay-btn:hover {
+            background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+        }
+
+        .order-total {
+            font-size: 20px;
+            font-weight: 700;
+            color: #dc2626;
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #fb923c;
+        }
+
+        .coupon-container {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            border-radius: 16px;
+            margin: 20px 0;
+            border: 2px solid #fb923c;
+        }
+
+        .coupon-title {
+            font-size: 24px;
+            color: #fb923c;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .coupon-number {
+            font-size: 48px;
+            color: #dc2626;
+            font-weight: 800;
+            letter-spacing: 3px;
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 3px dashed #fb923c;
+            margin: 20px 0;
+        }
+
+        .order-details {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .payment-success-icon {
+            font-size: 80px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+            color: white;
+            text-align: center;
+            padding: 24px;
+            margin-top: 80px;
+        }
+
+        @media (max-width: 768px) {
+            .header-main {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .search-container {
+                width: 100%;
+                max-width: none;
+            }
+
+            .hero-banner h1 {
+                font-size: 36px;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+                padding: 30px 20px;
+            }
+
+            .coupon-number {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-main">
+            <a href="#" class="logo">Shree Ashapura Canteen</a>
+            <span class="tagline">Delicious Food, Quick Service</span>
+            
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search food items...">
+                <button class="search-btn">🔍</button>
+            </div>
+
+            <nav class="header-nav">
+                <a href="#menu" class="nav-item">Menu</a>
+                <a href="#" class="nav-item">
+                    <span class="cart-icon">🛒
+                        <span class="cart-count">0</span>
+                    </span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <nav class="category-nav">
+        <div class="category-nav-container">
+            <a href="#" class="active">All Items</a>
+            <a href="#">Snacks</a>
+            <a href="#">Main Course</a>
+            <a href="#">Beverages</a>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <section class="hero-banner">
+            <h1>Welcome to Our Canteen</h1>
+            <p>Fresh food made with love, served hot and fast. Order online and skip the queue!</p>
+        </section>
+
+        <section id="menu">
+            <h2 class="section-title">🍽️ Today's Menu</h2>
+            
+            <div class="products-grid">
+                <div class="product-card" data-item="bombay-bhel" data-category="snacks">
+                    <div class="product-image">
+                        <img src="https://imgs.search.brave.com/HxxXJVsmUQJR7445YrUCZc0lcv3hVOnfuOvEstC0B20/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTE0/NjcxMjYzOS9waG90/by9jaGluZXNlLWJo/ZWwtaXMtYS1zcGlj/eS1pbmRvLWNoaW5l/c2UtcmVjaXBlLXNl/cnZlZC1pbi1hLWJv/d2wtc2VsZWN0aXZl/LWZvY3VzLmpwZz9z/PTYxMng2MTImdz0w/Jms9MjAmYz1sYW5K/UFQ5aDhiVzlTSVU1/Q2Y4UXZSMVRueTl5/aVM5ZXdSV3JaRUh6/STRjPQ" alt="Bombay Bhel">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Bombay Bhel</h3>
+                        <p class="product-subtitle">Crispy, tangy street food favorite</p>
+                        <div class="size-options">
+                            <span class="size-option active" data-size="half" data-price="60">Half - ₹60</span>
+                            <span class="size-option" data-size="full" data-price="90">Full - ₹90</span>
+                        </div>
+                        <div class="product-price">₹60</div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="product-card" data-item="hakka-noodles" data-category="main-course">
+                    <div class="product-image">
+                        <img src="https://imgs.search.brave.com/cdllpo7k7BSyZhkcqDiV1at5uxecy1htdjf4wBIZXBE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzA5LzU2LzU2LzEz/LzM2MF9GXzk1NjU2/MTM4Nl8xVFZES21V/TTdBY1JyNERxRWhk/STJJQzZScjNOS2Rx/WC5qcGc" alt="Hakka Noodles">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Hakka Noodles</h3>
+                        <p class="product-subtitle">Indo-Chinese stir-fried noodles</p>
+                        <div class="size-options">
+                            <span class="size-option active" data-size="half" data-price="60">Half - ₹60</span>
+                            <span class="size-option" data-size="full" data-price="90">Full - ₹90</span>
+                        </div>
+                        <div class="product-price">₹60</div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="product-card" data-item="samosa-pav" data-category="snacks">
+                    <div class="product-image">
+                        <img src="https://imgs.search.brave.com/SHvZk2QYqPbhjzxM9K2MWP6nbE3LG9u94wlTTANLF4M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/emVwdG9ub3cuY29t/L3Byb2R1Y3Rpb24v/aWstc2VvL3RyOnct/NjQwLGFyLTI0MDAt/MjQwMCxwci10cnVl/LGYtYXV0byxxLTgw/L2Ntcy9wcm9kdWN0/X3ZhcmlhbnQvMDNj/MzgzNjYtMDU1Zi00/MDY0LTkyMzItYTMy/NzkxZWNjNjQ1L1Nh/bW9zYS1QYXYtLmpw/ZWc" alt="Samosa Pav">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Samosa Pav</h3>
+                        <p class="product-subtitle">Crispy samosa with fresh pav</p>
+                        <div class="product-price">₹18</div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="product-card" data-item="fried-rice" data-category="main-course">
+                    <div class="product-image">
+                        <img src="https://imgs.search.brave.com/Aku3m_ADpYaLwfRsE_LAYwV1x8rBz7JXgA22fy9pr_g/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTI5/MjYxNjUyMS9waG90/by90YXN0eS1zY2hl/endhbi1jaGlja2Vu/LWZyaWVkLXJpY2Ut/d2l0aC10b21hdG8t/c2F1Y2Utc2VydmVk/LWluLXdoaXRlLWJv/d2wtb3Zlci1hLXJ1/c3RpYy13b29kZW4u/anBnP3M9NjEyeDYx/MiZ3PTAmaz0yMCZj/PUIxX2VmV3lSRE5Y/WWZqaFYwSlkybWhX/eVhYdDc0Q0UwVlU2/ZFkyUVZEN1E9" alt="Fried Rice">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Fried Rice</h3>
+                        <p class="product-subtitle">Aromatic rice with vegetables</p>
+                        <div class="size-options">
+                            <span class="size-option active" data-size="half" data-price="60">Half - ₹60</span>
+                            <span class="size-option" data-size="full" data-price="90">Full - ₹90</span>
+                        </div>
+                        <div class="product-price">₹60</div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="product-card" data-item="soft-drinks" data-category="beverages">
+                    <div class="product-image">
+                        <img src="https://imgs.search.brave.com/Tk7tQcSKIobfbfA8efyzGsvGMpxmypwGIa8w-N9L7OE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJzLmNvbS9p/bWFnZXMvaGQvYXNz/b3J0ZWQtY29sZC1k/cmlua3MtY29sbGVj/dGlvbi1razQ4c3p5/emZrNG9lZDU1LnBu/Zw" alt="Soft Drinks">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">Soft Drinks</h3>
+                        <p class="product-subtitle">Chilled beverages</p>
+                        <div class="product-price">₹20</div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCartModal()">&times;</span>
+            <h2 style="color: #fb923c; margin-bottom: 20px;">Your Cart</h2>
+            <div id="cartItems"></div>
+            <div id="cartTotal" class="order-total"></div>
+            <button id="proceedToPayment" class="checkout-btn">Proceed to Payment</button>
+        </div>
+    </div>
+
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeOrderModal()">&times;</span>
+            <div class="payment-success-icon">✅</div>
+            <h2 style="color: #16a34a; text-align: center; margin-bottom: 20px;">Payment Successful!</h2>
+            <div class="coupon-container">
+                <div class="coupon-title">🎫 Your Order Coupon</div>
+                <div class="coupon-number" id="couponNumber"></div>
+                <p style="color: #fb923c; font-weight: 600; font-size: 16px;">Show this number at the canteen counter</p>
+            </div>
+            <div class="order-details" id="orderDetails"></div>
+            <div class="order-total" id="orderTotal"></div>
+            <p style="text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;">
+                ⏱️ Your order will be ready in 10-15 minutes
+            </p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2025 Shree Ashapura Canteen | Fresh Food, Happy Students 🍽️❤️</p>
+    </footer>
+
+    <script>
+        let cart = [];
+        let orderCounter = parseInt(sessionStorage.getItem('orderCounter')) || 1000;
+
+        function updateCartCount() {
+            const cartCount = document.querySelector('.cart-count');
+            cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+        }
+
+        function generateCouponNumber() {
+            orderCounter++;
+            sessionStorage.setItem('orderCounter', orderCounter.toString());
+            return `SA${orderCounter}`;
+        }
+
+        document.querySelectorAll('.size-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const card = this.closest('.product-card');
+                const sizeOptions = card.querySelectorAll('.size-option');
+                const priceElement = card.querySelector('.product-price');
+                
+                sizeOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                
+                const price = this.dataset.price;
+                priceElement.textContent = `₹${price}`;
+            });
+        });
+
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const productCard = this.closest('.product-card');
+                const title = productCard.querySelector('.product-title').textContent;
+                const itemData = productCard.dataset.item;
+                
+                let price, size = '';
+                
+                const activeSizeOption = productCard.querySelector('.size-option.active');
+                if (activeSizeOption) {
+                    price = parseInt(activeSizeOption.dataset.price);
+                    size = activeSizeOption.dataset.size;
+                } else {
+                    const priceText = productCard.querySelector('.product-price').textContent;
+                    price = parseInt(priceText.replace('₹', ''));
+                }
+                
+                const itemId = size ? `${itemData}-${size}` : itemData;
+                const itemName = size ? `${title} (${size.charAt(0).toUpperCase() + size.slice(1)})` : title;
+                
+                const existingItem = cart.find(item => item.id === itemId);
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        id: itemId,
+                        name: itemName,
+                        price: price,
+                        quantity: 1
+                    });
+                }
+                
+                updateCartCount();
+                
+                this.textContent = 'Added! ✓';
+                this.style.background = 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)';
+                setTimeout(() => {
+                    this.textContent = 'Add to Cart';
+                    this.style.background = 'linear-gradient(135deg, #fb923c 0%, #f97316 100%)';
+                }, 1500);
+            });
+        });
+
+        document.querySelector('.cart-icon').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (cart.length === 0) {
+                alert('Your cart is empty! Add some items first.');
+                return;
+            }
+
+            showCartModal();
+        });
+
+        function showCartModal() {
+            const modal = document.getElementById('cartModal');
+            const cartItemsDiv = document.getElementById('cartItems');
+            const cartTotalDiv = document.getElementById('cartTotal');
+            
+            let itemsHTML = '';
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                itemsHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">₹${item.price} each</div>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
+                            <span class="quantity">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                        </div>
+                        <button class="remove-item" onclick="removeItem(${index})">Remove</button>
+                    </div>
+                `;
+            });
+            
+            cartItemsDiv.innerHTML = itemsHTML;
+            cartTotalDiv.innerHTML = `Total: ₹${total}`;
+            
+            modal.style.display = 'block';
+        }
+
+        function closeCartModal() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        function updateQuantity(index, change) {
+            cart[index].quantity += change;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartCount();
+            showCartModal();
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCartCount();
+            showCartModal();
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        document.getElementById('proceedToPayment').addEventListener('click', function() {
+            closeCartModal();
+            initiatePayment();
+        });
+
+        function initiatePayment() {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            const options = {
+                key: 'rzp_test_1234567890',
+                amount: total * 100,
+                currency: 'INR',
+                name: 'Shree Ashapura Canteen',
+                description: 'Food Order Payment',
+                image: 'https://example.com/logo.png',
+                handler: function (response) {
+                    handlePaymentSuccess(response);
+                },
+                prefill: {
+                    name: 'Student',
+                    email: 'student@example.com',
+                    contact: '9999999999'
+                },
+                theme: {
+                    color: '#fb923c'
+                },
+                modal: {
+                    ondismiss: function() {
+                        alert('Payment cancelled. Your cart is still saved.');
+                    }
+                }
+            };
+
+            try {
+                const rzp = new Razorpay(options);
+                rzp.open();
+            } catch (error) {
+                console.log('Razorpay not loaded, simulating payment...');
+                setTimeout(() => {
+                    handlePaymentSuccess({ 
+                        razorpay_payment_id: 'pay_' + Math.random().toString(36).substr(2, 9)
+                    });
+                }, 2000);
+            }
+        }
+
+        function handlePaymentSuccess(paymentResponse) {
+            const couponNumber = generateCouponNumber();
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            const orderData = {
+                id: couponNumber,
+                items: [...cart],
+                total: total,
+                timestamp: new Date().toISOString(),
+                paymentId: paymentResponse.razorpay_payment_id,
+                status: 'paid'
+            };
+            
+            let orders = JSON.parse(sessionStorage.getItem('orders')) || [];
+            orders.push(orderData);
+            sessionStorage.setItem('orders', JSON.stringify(orders));
+
+            showOrderConfirmation(couponNumber, cart, total);
+            
+            cart = [];
+            updateCartCount();
+        }
+
+        function showOrderConfirmation(couponNumber, orderItems, total) {
+            const modal = document.getElementById('orderModal');
+            const couponElement = document.getElementById('couponNumber');
+            const detailsElement = document.getElementById('orderDetails');
+            const totalElement = document.getElementById('orderTotal');
+
+            couponElement.textContent = couponNumber;
+            
+            let detailsHTML = '';
+            orderItems.forEach(item => {
+                detailsHTML += `<div class="order-item">
+                    <span>${item.name} x ${item.quantity}</span>
+                    <span>₹${item.price * item.quantity}</span>
+                </div>`;
+            });
+            detailsElement.innerHTML = detailsHTML;
+            
+            totalElement.textContent = `Total Paid: ₹${total}`;
+            
+            modal.style.display = 'block';
+        }
+
+        document.querySelector('.search-btn').addEventListener('click', function() {
+            const searchTerm = document.querySelector('.search-input').value.toLowerCase();
+            const productCards = document.querySelectorAll('.product-card');
+            
+            productCards.forEach(card => {
+                const title = card.querySelector('.product-title').textContent.toLowerCase();
+                const subtitle = card.querySelector('.product-subtitle').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || subtitle.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = searchTerm === '' ? 'block' : 'none';
+                }
+            });
+        });
+
+        document.querySelector('.search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.querySelector('.search-btn').click();
+            }
+        });
+
+        document.querySelectorAll('.category-nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                document.querySelectorAll('.category-nav a').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                
+                const category = this.textContent.toLowerCase().replace(' ', '-');
+                const productCards = document.querySelectorAll('.product-card');
+                
+                productCards.forEach(card => {
+                    if (category === 'all-items' || card.dataset.category === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        window.addEventListener('click', function(event) {
+            const modals = ['orderModal', 'cartModal'];
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
